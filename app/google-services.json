@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "153993223157",
+    "project_id": "viewability-monitoring",
+    "storage_bucket": "viewability-monitoring.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153993223157:android:366e3d2729c4b6e7a11ebc",
+        "android_client_info": {
+          "package_name": "com.meli.viewability.monitoring"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwWv8zDhcQlUwt_RfysgSpuJQRSzXSerA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
