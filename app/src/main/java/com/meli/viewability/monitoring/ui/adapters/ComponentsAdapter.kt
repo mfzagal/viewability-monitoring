@@ -164,7 +164,6 @@ class ComponentsAdapter() : RecyclerView.Adapter<ComponentsAdapter.ViewHolder>()
                 Log.d(TAG, "timeLoaded : ${timeLoaded}ms")
                 Log.d(TAG, "timeImpressionOccurred : ${timeImpressionOccurred}ms")
                 Log.d(TAG, "---- FINISH METRICS ----")
-
             }
         }
     }

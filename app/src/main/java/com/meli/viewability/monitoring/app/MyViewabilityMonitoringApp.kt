@@ -1,10 +1,13 @@
 package com.meli.viewability.monitoring.app
 
 import android.app.Application
+import android.os.StrictMode
 import android.util.Log
+//import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.perf.metrics.AddTrace
 import com.iab.omid.library.mercadolibre.Omid
+import com.meli.viewability.monitoring.BuildConfig
 import com.meli.viewability.monitoring.utils.TAG
 import dagger.hilt.android.HiltAndroidApp
 import kotlin.system.measureTimeMillis
@@ -15,7 +18,28 @@ class MyViewabilityMonitoringApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        if (BuildConfig.DEBUG) {
+            // Habilitar el modo estricto solo en compilaciones de depuración (debug)
+            StrictMode.setThreadPolicy(
+                StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    //.penaltyDeath()
+                    .build()
+            )
+
+            StrictMode.setVmPolicy(
+                StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    //.penaltyDeath()
+                    .build()
+            )
+        }
+
+        //MobileAds.initialize(this) //POC
         initializeFirebase()
+
         val timeInMillis = measureTimeMillis {
             initializeOmsdk()
         }
