@@ -3,12 +3,12 @@ package com.meli.viewability.monitoring.app
 import android.app.Application
 import android.os.StrictMode
 import android.util.Log
-//import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.perf.metrics.AddTrace
 import com.iab.omid.library.mercadolibre.Omid
 import com.meli.viewability.monitoring.BuildConfig
 import com.meli.viewability.monitoring.utils.TAG
+import com.meli.viewability.monitoring.utils.optimizeInitializationOmsdk
 import dagger.hilt.android.HiltAndroidApp
 import kotlin.system.measureTimeMillis
 
@@ -37,13 +37,12 @@ class MyViewabilityMonitoringApp : Application() {
             )
         }
 
-        //MobileAds.initialize(this) //POC
         initializeFirebase()
 
         val timeInMillis = measureTimeMillis {
             initializeOmsdk()
         }
-        Log.d(TAG, "initializeOmsdk : ${timeInMillis}ms")
+        Log.d(TAG, "finish initializeOmsdk : ${timeInMillis}ms")
     }
 
     @AddTrace(name = "initializeOmsdk")
@@ -52,6 +51,7 @@ class MyViewabilityMonitoringApp : Application() {
         Omid.activate(this)
         if (Omid.isActive()) {
             Log.d(TAG, "Omid ${Omid.getVersion()}")
+            optimizeInitializationOmsdk(this)
         } else {
             Log.d(TAG, "fail initializeOmsdk")
         }

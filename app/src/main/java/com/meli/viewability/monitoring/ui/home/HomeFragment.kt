@@ -1,6 +1,8 @@
 package com.meli.viewability.monitoring.ui.home
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +41,16 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         addObservers()
+
+        //Optional delay
+        /*
+        Handler(Looper.getMainLooper()).postDelayed({
+            viewModel.getComponents()
+        }, 1000)
+        */
+
         viewModel.getComponents()
+
         return binding.root
     }
 

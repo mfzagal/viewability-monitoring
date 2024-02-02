@@ -60,7 +60,7 @@ class ComponentsAdapter() : RecyclerView.Adapter<ComponentsAdapter.ViewHolder>()
             when (component.type) {
                 ComponentType.ADS -> {
                     tvName.visibility = View.GONE
-                    setupAdView(binding.root.context, binding)
+                    setupAdView(binding.root.context, binding, component)
                     showAds(binding, component)
 
                 }
@@ -110,7 +110,7 @@ class ComponentsAdapter() : RecyclerView.Adapter<ComponentsAdapter.ViewHolder>()
         }
 
         @AddTrace(name = "setupAdView")
-        private fun setupAdView(context: Context, binding: TemplateComponentBinding) {
+        private fun setupAdView(context: Context, binding: TemplateComponentBinding, component: Component) {
             var adSession : AdSession? = null
 
             val timeCreateNativeSession = measureTimeMillis {
@@ -118,14 +118,15 @@ class ComponentsAdapter() : RecyclerView.Adapter<ComponentsAdapter.ViewHolder>()
                     adSession = getNativeAdSession(
                         context,
                         CUSTOM_REFERENCE_DATA,
-                        CreativeType.NATIVE_DISPLAY
+                        CreativeType.NATIVE_DISPLAY,
+                        component.id
                     )
                 } catch (e: MalformedURLException) {
                     Log.d(TAG, "setupAdSession failed", e)
                 }
             }
 
-            Log.d(TAG, "timeCreateNativeSession : ${timeCreateNativeSession}ms")
+            Log.d(TAG, "${component.id} timeCreateNativeSession : ${timeCreateNativeSession}ms")
 
             adSession?.let { session ->
                 val timeRegisterAdView = measureTimeMillis {
@@ -157,13 +158,13 @@ class ComponentsAdapter() : RecyclerView.Adapter<ComponentsAdapter.ViewHolder>()
                     adEvents.impressionOccurred()
                 }
 
-                Log.d(TAG, "timeRegisterAdView : ${timeRegisterAdView}ms")
-                Log.d(TAG, "timeAddFriendlyObstruction : ${timeAddFriendlyObstruction}ms")
-                Log.d(TAG, "timeSessionStart : ${timeSessionStart}ms")
-                Log.d(TAG, "timeCreateAdEvents : ${timeCreateAdEvents}ms")
-                Log.d(TAG, "timeLoaded : ${timeLoaded}ms")
-                Log.d(TAG, "timeImpressionOccurred : ${timeImpressionOccurred}ms")
-                Log.d(TAG, "---- FINISH METRICS ----")
+                Log.d(TAG, "${component.id} timeRegisterAdView : ${timeRegisterAdView}ms")
+                Log.d(TAG, "${component.id} timeAddFriendlyObstruction : ${timeAddFriendlyObstruction}ms")
+                Log.d(TAG, "${component.id} timeSessionStart : ${timeSessionStart}ms")
+                Log.d(TAG, "${component.id} timeCreateAdEvents : ${timeCreateAdEvents}ms")
+                Log.d(TAG, "${component.id} timeLoaded : ${timeLoaded}ms")
+                Log.d(TAG, "${component.id} timeImpressionOccurred : ${timeImpressionOccurred}ms")
+                Log.d(TAG, "---- FINISH METRICS ---- ${component.id}")
             }
         }
     }

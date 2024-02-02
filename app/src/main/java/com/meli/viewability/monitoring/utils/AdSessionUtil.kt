@@ -2,6 +2,7 @@ package com.meli.viewability.monitoring.utils
 
 import android.content.Context
 import android.util.Log
+import android.view.View
 import com.google.firebase.perf.metrics.AddTrace
 import com.iab.omid.library.mercadolibre.Omid
 import com.iab.omid.library.mercadolibre.adsession.AdSession
@@ -14,6 +15,7 @@ import com.iab.omid.library.mercadolibre.adsession.Partner
 import com.iab.omid.library.mercadolibre.adsession.VerificationScriptResource
 import com.meli.viewability.monitoring.BuildConfig
 import com.meli.viewability.monitoring.R
+import com.meli.viewability.monitoring.ui.adapters.ComponentsAdapter
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
@@ -24,7 +26,8 @@ import kotlin.system.measureTimeMillis
 fun getNativeAdSession(
     context: Context?,
     customReferenceData: String?,
-    creativeType: CreativeType
+    creativeType: CreativeType,
+    logContext: String? = ""
 ): AdSession {
 
     val timeEnsureOmidActivated = measureTimeMillis {
@@ -74,14 +77,14 @@ fun getNativeAdSession(
         adSession = AdSession.createAdSession(adSessionConfiguration, adSessionContext)
     }
 
-    Log.d(TAG, "---- INIT METRICS ----")
-    Log.d(TAG, "timeEnsureOmidActivated : ${timeEnsureOmidActivated}ms")
-    Log.d(TAG, "timeCreateAdSessionConfiguration : ${timeCreateAdSessionConfiguration}ms")
-    Log.d(TAG, "timeCreatePartner : ${timeCreatePartner}ms")
-    Log.d(TAG, "timeGetOmidJs : ${timeGetOmidJs}ms")
-    Log.d(TAG, "timeGetVerificationScriptResources : ${timeGetVerificationScriptResources}ms")
-    Log.d(TAG, "timeCreateNativeAdSessionContext : ${timeCreateNativeAdSessionContext}ms")
-    Log.d(TAG, "timeCreateAdSession : ${timeCreateAdSession}ms")
+    Log.d(TAG, "---- INIT METRICS ---- : $logContext".trim())
+    Log.d(TAG, "$logContext timeEnsureOmidActivated : ${timeEnsureOmidActivated}ms".trim())
+    Log.d(TAG, "$logContext timeCreateAdSessionConfiguration : ${timeCreateAdSessionConfiguration}ms".trim())
+    Log.d(TAG, "$logContext timeCreatePartner : ${timeCreatePartner}ms".trim())
+    Log.d(TAG, "$logContext timeGetOmidJs : ${timeGetOmidJs}ms".trim())
+    Log.d(TAG, "$logContext timeGetVerificationScriptResources : ${timeGetVerificationScriptResources}ms".trim())
+    Log.d(TAG, "$logContext timeCreateNativeAdSessionContext : ${timeCreateNativeAdSessionContext}ms".trim())
+    Log.d(TAG, "$logContext timeCreateAdSession : ${timeCreateAdSession}ms".trim())
 
     return adSession
 }
@@ -125,5 +128,45 @@ fun getOmidJs(context: Context?): String {
         }
     } ?: run {
         return ""
+    }
+}
+
+fun optimizeInitializationOmsdk(context: Context?) {
+    Log.d(TAG, "*** START INITIAL_OPTIMIZATION ***")
+
+    var adSession: AdSession? = null
+
+    val timeCreateNativeSession = measureTimeMillis {
+        try {
+            adSession = getNativeAdSession(
+                context,
+                ComponentsAdapter.CUSTOM_REFERENCE_DATA,
+                CreativeType.NATIVE_DISPLAY,
+                "INITIAL_OPTIMIZATION"
+            )
+        } catch (e: MalformedURLException) {
+            Log.d(TAG, "setupAdSession failed", e)
+        }
+    }
+
+    adSession?.let { session ->
+        val timeRegisterAdView = measureTimeMillis {
+            session.registerAdView(View(context))
+        }
+
+        val timeSessionStart = measureTimeMillis {
+            session.start()
+        }
+
+        Log.d(TAG, "DASH INITIAL_OPTIMIZATION -> timeRegisterAdView : ${timeRegisterAdView}ms")
+        Log.d(TAG, "DASH INITIAL_OPTIMIZATION -> timeSessionStart : ${timeSessionStart}ms")
+    }
+
+    Log.d(TAG, "DASH INITIAL_OPTIMIZATION -> timeCreateNativeSession : ${timeCreateNativeSession}ms")
+
+    Log.d(TAG, "*** FINISH INITIAL_OPTIMIZATION ***")
+    adSession.let { session ->
+        session?.finish()
+        session?.let { adSession = null }
     }
 }
